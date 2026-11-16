@@ -36,7 +36,7 @@
     .mini-stats > div { background:#f1f4f7; border-radius:8px; padding:8px; }
     .mini-stats span { font-size:10px; color:var(--muted); display:block; }
     .mini-stats strong { font-size:16px; display:block; margin-top:2px; }
-    #legendBox { bottom:16px; left:16px; width:255px; padding:11px 13px; max-height:38vh; overflow:auto; }
+    #legendBox { bottom:16px; left:16px; width:293px; padding:11px 13px; max-height:38vh; overflow:auto; }
     #legendBox summary { list-style:none; font-weight:700; font-size:13px; display:flex; justify-content:space-between; cursor:pointer; align-items:center; }
     #legendBox summary::-webkit-details-marker { display:none; }
     #legendBox summary:after { content:'⌄'; color:var(--muted); font-size:17px; }
@@ -99,7 +99,7 @@
       .ku-logo-crop { transform:scale(.63); transform-origin:right center; margin-left:-90px; }
       #mapShell { top:75px; right:0; height:61vh; bottom:auto; }
       .filters { width:250px; padding:10px; top:9px; left:9px; }
-      #legendBox { bottom:9px; left:9px; width:234px; max-height:28vh; }
+      #legendBox { bottom:9px; left:9px; width:250px; max-height:28vh; }
       .right-panel { top:calc(75px + 61vh); position:absolute; bottom:auto; width:100%; overflow:visible; border-left:none; display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:10px; }
       .data-card { min-width:0; margin:0; }
       .map-instruction { display:none; }
@@ -112,7 +112,7 @@
       .filters { width:220px; }
       .right-panel { display:block; }
       .data-card { margin-bottom:12px; }
-      #legendBox { width:195px; }
+      #legendBox { width:220px; }
     }
     @media (max-height:720px) and (min-width:821px) { #legendBox { max-height:31vh; } }
   </style>
@@ -167,14 +167,12 @@
       <p class="intro">Tidsserier for den valgte gletsjer. Klik på kortet for at skifte.</p>
       <div class="selected-meta" id="selectedMeta"></div>
       <div id="groupChoice"></div>
-      <div class="chart-heading"><span>Decadal rate – tidsserie</span><small>m/år · dataværdier</small></div>
+      <div class="chart-heading"><span>Decadal rate – tidsserie</span><small>m/år · årtier vist ved midtår</small></div>
       <div class="chart-frame" id="individualLineChart"><div class="chart-empty">Vælg en gletsjer på kortet</div></div>
       <div class="observation-title" id="observationTitle">Opmålte israndspositioner</div>
       <div class="chart-frame" id="observationChart"></div>
       <p class="chart-note">Hver prik er en dateret israndslinje. Data indeholder ikke en retreatafstand pr. observation.</p>
       <div id="eventInfo" class="event-info"></div>
-      <div class="chart-heading"><span>Decadal rate – søjler</span><small>m/år</small></div>
-      <div class="chart-frame" id="individualBarChart"></div>
       <p class="chart-note">Negative værdier er retreat; positive værdier er advance. Manglende værdier vises ikke som nul.</p>
       <details class="raw-values"><summary>Se alle decadale værdier</summary><div id="valueTable"></div></details>
     </section>
@@ -227,7 +225,7 @@
       const marginsByGroup = new Map();
       MARGINS.forEach((m,index)=>{m.index=index;if(!marginsByGroup.has(m.group))marginsByGroup.set(m.group,[]);marginsByGroup.get(m.group).push(m);});
       const state = {layer:'decadal_mean',decade:'2000s',terminus:'all',viewOnly:true,selectedId:FEATURES[0].id,selectedMarginIndex:null};
-      const ids=['layerSelect','decadeSelect','terminusSelect','showMargins','showPoints','viewOnly','countStat','legendGrid','selectedTitle','selectedMeta','groupChoice','individualLineChart','individualBarChart','observationChart','observationTitle','eventInfo','avgPointCount','avgCurrent','averageBarChart','averageNote','aggregateSubtitle','valueTable'];
+      const ids=['layerSelect','decadeSelect','terminusSelect','showMargins','showPoints','viewOnly','countStat','legendGrid','selectedTitle','selectedMeta','groupChoice','individualLineChart','observationChart','observationTitle','eventInfo','avgPointCount','avgCurrent','averageBarChart','averageNote','aggregateSubtitle','valueTable'];
       const el = Object.fromEntries(ids.map(id=>[id,document.getElementById(id)]));
       const esc = val => String(val==null?'':val).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
       const fmt = (value, digits=1) => Number.isFinite(value) ? value.toLocaleString('da-DK',{minimumFractionDigits:digits,maximumFractionDigits:digits}) : '–';
@@ -298,6 +296,20 @@
         el.countStat.textContent=fmt(selected.length,0);
       }
       const chartW=348,marginL=43,marginR=12,chartInnerW=chartW-marginL-marginR;
+      const timelineStartYear=1930,timelineEndYear=2030;
+      const timeTicks=[1930,1950,1970,1990,2010,2030];
+      const xForYear=year=>marginL+chartInnerW*(year-timelineStartYear)/(timelineEndYear-timelineStartYear);
+      function xForObservation(m) {
+        const year=Number(m.year);
+        if(!Number.isFinite(year))return xForYear(timelineStartYear);
+        let fractionalYear=year;
+        if(m.date && /^\d{4}-\d{2}-\d{2}/.test(m.date)) {
+          const dt=Date.parse(m.date.slice(0,10)+'T00:00:00Z');
+          const first=Date.UTC(year,0,1),next=Date.UTC(year+1,0,1);
+          if(Number.isFinite(dt))fractionalYear=year+(dt-first)/(next-first);
+        }
+        return xForYear(Math.min(timelineEndYear,Math.max(timelineStartYear,fractionalYear)));
+      }
       function niceMax(x){if(!(x>0))return 1;const pow=Math.pow(10,Math.floor(Math.log10(x)));const k=x/pow;return (k<=1?1:k<=2?2:k<=5?5:10)*pow;}
       function chartModel(values,opts={}){
         const height=opts.height||140, top=11,bottom=height-27;
@@ -307,18 +319,22 @@
         const step=chartInnerW/DECADES.length;
         return {height,top,bottom,vmax,y,x,step,valid};
       }
-      function chartScaffold(m){
+      function chartScaffold(m,alignedYearAxis=false){
         const labels=[m.vmax,0,-m.vmax];let svg='';
         labels.forEach(v=>{
           const yy=m.y(v);svg+=`<line x1="${marginL}" y1="${yy}" x2="${chartW-marginR}" y2="${yy}" class="${v===0?'axis-line':'grid-line'}"/><text x="${marginL-6}" y="${yy+3}" text-anchor="end" class="axis-label">${esc(fmt(v,0))}</text>`;
         });
-        DECADES.forEach((d,i)=>{svg+=`<text x="${m.x(i)}" y="${m.height-10}" text-anchor="middle" class="axis-label">${d.slice(0,4)}</text>`;});
+        if(alignedYearAxis){
+          timeTicks.forEach(year=>{const xx=xForYear(year);svg+=`<line x1="${xx}" y1="${m.bottom}" x2="${xx}" y2="${m.bottom+5}" stroke="#a8b6c2" stroke-width=".75"/><text x="${xx}" y="${m.height-10}" text-anchor="middle" class="axis-label">${year}</text>`;});
+        } else {
+          DECADES.forEach((d,i)=>{svg+=`<text x="${m.x(i)}" y="${m.height-10}" text-anchor="middle" class="axis-label">${d.slice(0,4)}</text>`;});
+        }
         return svg;
       }
       function emptyChart(message){return `<div class="chart-empty">${esc(message)}</div>`;}
       function lineChart(vals){
         if(!vals.some(Number.isFinite))return emptyChart('Ingen gyldige decadale værdier');
-        const m=chartModel(vals,{height:141});let svg=chartScaffold(m),prev=-1;
+        const m=chartModel(vals,{height:141});let svg=chartScaffold(m,true),prev=-1;
         vals.forEach((v,i)=>{
           if(Number.isFinite(v)){
             if(prev>=0 && prev===i-1){svg+=`<line x1="${m.x(prev)}" y1="${m.y(vals[prev])}" x2="${m.x(i)}" y2="${m.y(v)}" stroke="#526a80" stroke-width="1.9" stroke-linecap="round"/>`;}
@@ -345,21 +361,22 @@
         return `<svg class="svg-chart" viewBox="0 0 ${chartW} ${m.height}" role="img" aria-label="Decadale rater vist som positive og negative søjler">${svg}</svg>`;
       }
       function observationChart(items){
-        if(!items.length)return emptyChart('Ingen israndopmålinger tilknyttet');
-        const W=348,H=58,L=15,R=14,start=MARGIN_DATE_MIN,end=MARGIN_DATE_MAX,axisY=27;
-        const x=day=>L+(W-L-R)*(day-start)/(end-start);
-        let s=`<line x1="${L}" x2="${W-R}" y1="${axisY}" y2="${axisY}" stroke="#aebac3" stroke-width="1"/>`;
-        [1931,1950,1975,2000,2025].forEach(year=>{
-          const day=Math.round(Date.UTC(year,0,1)/86400000)+719163;const xx=x(day);
-          s+=`<line x1="${xx}" x2="${xx}" y1="25" y2="32" stroke="#aebac3"/><text x="${xx}" y="47" text-anchor="middle" class="axis-label">${year}</text>`;
+        const H=58,axisY=26;
+        let s=`<line x1="${marginL}" x2="${chartW-marginR}" y1="${axisY}" y2="${axisY}" stroke="#aebac3" stroke-width="1"/>`;
+        timeTicks.forEach(year=>{
+          const xx=xForYear(year);
+          s+=`<line x1="${xx}" x2="${xx}" y1="${axisY-2}" y2="${axisY+6}" stroke="#aebac3"/><text x="${xx}" y="${H-10}" text-anchor="middle" class="axis-label">${year}</text>`;
         });
+        if(!items.length){
+          s+=`<text x="${marginL+chartInnerW/2}" y="14" text-anchor="middle" class="axis-label">Ingen tilknyttede israndopmålinger</text>`;
+        }
         const sameDays=new Map();
         items.forEach(m=>{
           const n=sameDays.get(m.day)||0;sameDays.set(m.day,n+1);
           const cy=axisY-5-Math.min(n,3)*7,selected=state.selectedMarginIndex===m.index;
-          s+=`<circle cx="${x(m.day)}" cy="${cy}" r="${selected?6.5:4.2}" fill="rgb(${marginColor(m.day).join(',')})" stroke="${selected?'#192e3b':'#fff'}" stroke-width="${selected?2:1.1}"><title>${esc(m.date||String(m.year))} · ${esc(m.image||'Billede ikke oplyst')}</title></circle>`;
+          s+=`<circle cx="${xForObservation(m)}" cy="${cy}" r="${selected?6.5:4.2}" fill="rgb(${marginColor(m.day).join(',')})" stroke="${selected?'#192e3b':'#fff'}" stroke-width="${selected?2:1.1}"><title>${esc(m.date||String(m.year))} · ${esc(m.image||'Billede ikke oplyst')}</title></circle>`;
         });
-        return `<svg class="svg-chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="En tidslinje hvor hver prik er en dateret israndsopmåling">${s}</svg>`;
+        return `<svg class="svg-chart" viewBox="0 0 ${chartW} ${H}" role="img" aria-label="Israndobservationer på samme tidsakse fra 1930 til 2030 som rategrafen">${s}</svg>`;
       }
       function renderIndividual(){
         const f=byId.get(state.selectedId);
@@ -374,7 +391,6 @@
           el.groupChoice.querySelector('select').addEventListener('change',ev=>{state.selectedId=ev.target.value;state.selectedMarginIndex=null;renderPoints();renderIndividual();});
         } else el.groupChoice.innerHTML='';
         el.individualLineChart.innerHTML=lineChart(vals);
-        el.individualBarChart.innerHTML=barChart(vals);
         const rows=DECADES.map((d,i)=>`<tr><td>${esc(d)}</td><td>${signed(vals[i])} m/år</td></tr>`).join('');
         let overall='';
         if(state.layer==='decadal_mean_w_OverallRate'){
