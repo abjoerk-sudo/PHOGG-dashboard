@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="da">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -123,70 +123,70 @@
       <h1>PHOGG Retreat Explorer</h1>
       <p>Greenland glacier change · decadal rates &amp; historical ice margins · 1931–2025</p>
     </div>
-    <a href="https://www.ku.dk/" target="_blank" rel="noopener" class="brand" title="Københavns Universitet">
-      <span class="ku-logo-crop"><img src="https://www.ku.dk/fileadmin/_processed_/f/6/csm_Logo_1500x1000Det-digitale-logo-BIG-GREY-BGND_a67f243ffa.png" alt="Københavns Universitet" /></span>
+    <a href="https://www.ku.dk/" target="_blank" rel="noopener" class="brand" title="University of Copenhagen">
+      <span class="ku-logo-crop"><img src="https://www.ku.dk/fileadmin/_processed_/f/6/csm_Logo_1500x1000Det-digitale-logo-BIG-GREY-BGND_a67f243ffa.png" alt="University of Copenhagen" /></span>
     </a>
   </header>
 
-  <section id="mapShell" aria-label="Kort over Grønland">
+  <section id="mapShell" aria-label="Map of Greenland">
     <div id="viewDiv"></div>
-    <div class="map-instruction">Klik på en gletsjer eller israndslinje for at udforske dens data</div>
-    <aside class="map-float filters" aria-label="Kortfiltre">
+    <div class="map-instruction">Click a glacier point or ice-margin line to explore its data</div>
+    <aside class="map-float filters" aria-label="Map filters">
       <h2>Map controls</h2>
-      <p>Vælg et lag og årti. Punkternes farver og størrelser har samme skala i hele datasættet.</p>
-      <div class="control"><label for="layerSelect">Beregningsmetode</label><select id="layerSelect"></select></div>
-      <div class="control"><label for="decadeSelect">Årti på kortet</label><select id="decadeSelect"></select></div>
-      <div class="control"><label for="terminusSelect">Gletsjertype</label><select id="terminusSelect"><option value="all">Alle typer</option><option value="marine">Marine</option><option value="land">Land</option><option value="lake">Lake</option></select></div>
+      <p>Select a method and decade. Point colours and sizes use a fixed scale across the entire dataset.</p>
+      <div class="control"><label for="layerSelect">Calculation method</label><select id="layerSelect"></select></div>
+      <div class="control"><label for="decadeSelect">Map decade</label><select id="decadeSelect"></select></div>
+      <div class="control"><label for="terminusSelect">Glacier terminus type</label><select id="terminusSelect"><option value="all">All types</option><option value="marine">Marine</option><option value="land">Land</option><option value="lake">Lake</option></select></div>
       <div class="toggle-row">
-        <label for="showMargins"><input id="showMargins" type="checkbox" checked /> Isrande <span id="marginCount"></span></label>
-        <label for="showPoints"><input id="showPoints" type="checkbox" checked /> Gletsjerpunkter</label>
+        <label for="showMargins"><input id="showMargins" type="checkbox" checked /> Ice margins <span id="marginCount"></span></label>
+        <label for="showPoints"><input id="showPoints" type="checkbox" checked /> Glacier points</label>
       </div>
-      <label class="view-toggle" for="viewOnly"><input id="viewOnly" type="checkbox" checked /> Beregn gennemsnit for aktuelt kortudsnit</label>
+      <label class="view-toggle" for="viewOnly"><input id="viewOnly" type="checkbox" checked /> Calculate average within current map extent</label>
       <div class="mini-stats">
-        <div><span>Valgt gletsjertype</span><strong id="countStat">346</strong></div>
-        <div><span>Skalainterval (m/år)</span><strong id="scaleStat">±5.303</strong></div>
+        <div><span>Glaciers in selected type</span><strong id="countStat">346</strong></div>
+        <div><span>Fixed scale range (m/yr)</span><strong id="scaleStat">±5.303</strong></div>
       </div>
     </aside>
     <details class="map-float" id="legendBox" open>
-      <summary>Signaturforklaring</summary>
-      <div class="legend-copy">Retreat (−) = rød, advance (+) = grøn. Samme størrelsesklasser for alle årtier og lag.</div>
-      <div class="legend-headers"><span>−</span><span>+</span><span>|Ændringsrate|</span></div>
+      <summary>Legend</summary>
+      <div class="legend-copy">Retreat (−) = red; advance (+) = green. Identical size classes across all decades and layers.</div>
+      <div class="legend-headers"><span>−</span><span>+</span><span>|Change rate|</span></div>
       <div class="legend-grid" id="legendGrid"></div>
       <div class="margin-legend">
-        <h3>Historiske isrande – årstal</h3>
-        <div class="margin-bar" aria-label="Ens tidsskala fra 1931 til 2025"></div>
+        <h3>Historical ice margins – year</h3>
+        <div class="margin-bar" aria-label="Uniform time scale from 1931 to 2025"></div>
         <div class="margin-ticks"><span id="earliestYear">1931</span><span>1950</span><span>1975</span><span>2000</span><span id="latestYear">2025</span></div>
-        <div class="map-credit">Alle gletschere deler den samme datoskala.<br/>Baggrundskort: NunaGIS / Asiaq</div>
+        <div class="map-credit">All glaciers share the same date colour scale.<br/>Basemap: NunaGIS / Asiaq</div>
       </div>
     </details>
   </section>
 
-  <aside class="right-panel" aria-label="Tidsserier og gennemsnit">
+  <aside class="right-panel" aria-label="Time series and map averages">
     <section class="data-card" id="individualPanel">
-      <h2 id="selectedTitle">Enkelte gletsjer</h2>
-      <p class="intro">Tidsserier for den valgte gletsjer. Klik på kortet for at skifte.</p>
+      <h2 id="selectedTitle">Selected glacier</h2>
+      <p class="intro">Time series for the selected glacier. Click a map feature to select a different one.</p>
       <div class="selected-meta" id="selectedMeta"></div>
       <div id="groupChoice"></div>
-      <div class="chart-heading"><span>Decadal rate – tidsserie</span><small>m/år · årtier vist ved midtår</small></div>
-      <div class="chart-frame" id="individualLineChart"><div class="chart-empty">Vælg en gletsjer på kortet</div></div>
-      <div class="observation-title" id="observationTitle">Opmålte israndspositioner</div>
+      <div class="chart-heading"><span>Decadal rate – time series</span><small>m/yr · decades plotted at midpoint</small></div>
+      <div class="chart-frame" id="individualLineChart"><div class="chart-empty">Select a glacier on the map</div></div>
+      <div class="observation-title" id="observationTitle">Observed ice-margin positions</div>
       <div class="chart-frame" id="observationChart"></div>
-      <p class="chart-note">Hver prik er en dateret israndslinje. Data indeholder ikke en retreatafstand pr. observation.</p>
+      <p class="chart-note">Each dot represents a dated ice-margin observation. The source does not report a retreat distance per observation.</p>
       <div id="eventInfo" class="event-info"></div>
-      <p class="chart-note">Negative værdier er retreat; positive værdier er advance. Manglende værdier vises ikke som nul.</p>
-      <details class="raw-values"><summary>Se alle decadale værdier</summary><div id="valueTable"></div></details>
+      <p class="chart-note">Negative values indicate retreat; positive values indicate advance. Missing values are not treated as zero.</p>
+      <details class="raw-values"><summary>View all decadal values</summary><div id="valueTable"></div></details>
     </section>
 
     <section class="data-card" id="aggregatePanel">
-      <h2>Gennemsnit af valgte gletsjere</h2>
-      <p class="intro" id="aggregateSubtitle">Uvejet gennemsnit pr. årti af punkter i det valgte kortudsnit og gletsjertype.</p>
+      <h2>Average on map extent</h2>
+      <p class="intro" id="aggregateSubtitle">Unweighted decadal mean of glacier points in the current map extent and selected terminus type.</p>
       <div class="mean-highlight">
-        <div><span>Gletsjere i beregningen</span><strong id="avgPointCount">–</strong></div>
-        <div><span>Valgt årti (m/år)</span><strong id="avgCurrent">–</strong></div>
+        <div><span>Glaciers included</span><strong id="avgPointCount">–</strong></div>
+        <div><span>Selected decade (m/yr)</span><strong id="avgCurrent">–</strong></div>
       </div>
-      <div class="chart-heading"><span>Gennemsnitlig decadal rate</span><small>m/år</small></div>
+      <div class="chart-heading"><span>Average decadal rate</span><small>m/yr</small></div>
       <div class="chart-frame" id="averageBarChart"></div>
-      <p class="chart-note" id="averageNote">Kun gletsjere med en gyldig rate indgår i gennemsnittet for det pågældende årti.</p>
+      <p class="chart-note" id="averageNote">Only glaciers with valid rate data are included in each decadal average.</p>
     </section>
   </aside>
 
@@ -208,8 +208,8 @@
       'esri/Graphic','esri/geometry/Point','esri/geometry/Extent','esri/geometry/SpatialReference','esri/widgets/Home'
     ], function(ArcMap,MapView,VectorTileLayer,GraphicsLayer,Graphic,Point,Extent,SpatialReference,Home) {
       const sr = new SpatialReference({wkid:32624});
-      const basemap = new VectorTileLayer({url:'https://kort.nunagis.gl/server/rest/services/Hosted/GL_Skaermkort/VectorTileServer',title:'NunaGIS skærmkort'});
-      const marginLayer = new GraphicsLayer({title:'Historiske israndspositioner'});
+      const basemap = new VectorTileLayer({url:'https://kort.nunagis.gl/server/rest/services/Hosted/GL_Skaermkort/VectorTileServer',title:'NunaGIS basemap'});
+      const marginLayer = new GraphicsLayer({title:'Historical ice-margin positions'});
       const pointLayer = new GraphicsLayer({title:'PHOGG decadal rates'});
       const map = new ArcMap({layers:[basemap,marginLayer,pointLayer]});
       const view = new MapView({
@@ -228,7 +228,7 @@
       const ids=['layerSelect','decadeSelect','terminusSelect','showMargins','showPoints','viewOnly','countStat','legendGrid','selectedTitle','selectedMeta','groupChoice','individualLineChart','observationChart','observationTitle','eventInfo','avgPointCount','avgCurrent','averageBarChart','averageNote','aggregateSubtitle','valueTable'];
       const el = Object.fromEntries(ids.map(id=>[id,document.getElementById(id)]));
       const esc = val => String(val==null?'':val).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-      const fmt = (value, digits=1) => Number.isFinite(value) ? value.toLocaleString('da-DK',{minimumFractionDigits:digits,maximumFractionDigits:digits}) : '–';
+      const fmt = (value, digits=1) => Number.isFinite(value) ? value.toLocaleString('en-US',{minimumFractionDigits:digits,maximumFractionDigits:digits}) : '–';
       const signed = x => Number.isFinite(x) ? (x>0?'+':'')+fmt(x,1) : '–';
       const layerShort = {'decadal_mean':'Mean','decadal_median':'Median','decadal_centerline':'Centerline','decadal_mean_w_OverallRate':'Mean + overall'};
       const colorForRate = v => v===0?'#85929f':v<0?'#c12d36':'#168147';
@@ -254,7 +254,7 @@
 
       function populateControls(){
         Object.entries(LAYERS).forEach(([key,value])=>el.layerSelect.add(new Option(value,key)));
-        DECADES.forEach(d=>el.decadeSelect.add(new Option(d.slice(0,4)+"'erne",d)));
+        DECADES.forEach(d=>el.decadeSelect.add(new Option(d.slice(0,4)+'s',d)));
         el.layerSelect.value=state.layer;el.decadeSelect.value=state.decade;
         document.getElementById('scaleStat').textContent='±'+fmt(ABS_MAX,0);
         document.getElementById('marginCount').textContent='('+fmt(MARGINS.length,0)+')';
@@ -268,7 +268,7 @@
             node.style.width=size+'px';node.style.height=size+'px';node.style.background=interp((i+1)/CLASS_BREAKS.length,positive);
             el.legendGrid.appendChild(node);
           }
-          const txt=document.createElement('span');txt.textContent=fmt(low,0)+'–'+fmt(high,0)+' m/år';el.legendGrid.appendChild(txt);low=high;
+          const txt=document.createElement('span');txt.textContent=fmt(low,0)+'–'+fmt(high,0)+' m/yr';el.legendGrid.appendChild(txt);low=high;
         });
       }
       function renderMargins(){
@@ -333,32 +333,32 @@
       }
       function emptyChart(message){return `<div class="chart-empty">${esc(message)}</div>`;}
       function lineChart(vals){
-        if(!vals.some(Number.isFinite))return emptyChart('Ingen gyldige decadale værdier');
+        if(!vals.some(Number.isFinite))return emptyChart('No valid decadal values');
         const m=chartModel(vals,{height:141});let svg=chartScaffold(m,true),prev=-1;
         vals.forEach((v,i)=>{
           if(Number.isFinite(v)){
             if(prev>=0 && prev===i-1){svg+=`<line x1="${m.x(prev)}" y1="${m.y(vals[prev])}" x2="${m.x(i)}" y2="${m.y(v)}" stroke="#526a80" stroke-width="1.9" stroke-linecap="round"/>`;}
-            svg+=`<circle cx="${m.x(i)}" cy="${m.y(v)}" r="4.3" fill="${colorForRate(v)}" stroke="#fff" stroke-width="1.25"><title>${DECADES[i]}: ${signed(v)} m/år</title></circle>`;
+            svg+=`<circle cx="${m.x(i)}" cy="${m.y(v)}" r="4.3" fill="${colorForRate(v)}" stroke="#fff" stroke-width="1.25"><title>${DECADES[i]}: ${signed(v)} m/yr</title></circle>`;
             prev=i;
           } else prev=-1;
         });
-        return `<svg class="svg-chart" viewBox="0 0 ${chartW} ${m.height}" role="img" aria-label="Tidsserie med enkeltpunkter for ti årtier">${svg}</svg>`;
+        return `<svg class="svg-chart" viewBox="0 0 ${chartW} ${m.height}" role="img" aria-label="Time series for ten decades">${svg}</svg>`;
       }
       function barChart(vals,counts=null,height=142){
-        if(!vals.some(Number.isFinite))return emptyChart('Ingen værdier i dette udvalg');
+        if(!vals.some(Number.isFinite))return emptyChart('No values for this selection');
         const m=chartModel(vals,{height});let svg=chartScaffold(m);
         vals.forEach((v,i)=>{
           const xx=m.x(i),width=Math.max(9,m.step*.59);
           if(Number.isFinite(v)){
             const zero=m.y(0),yy=m.y(v),h=Math.max(1,Math.abs(yy-zero));
             const n=counts?` · n=${counts[i]}`:'';
-            svg+=`<rect x="${xx-width/2}" y="${v>=0?yy:zero}" width="${width}" height="${h}" rx="2" fill="${colorForRate(v)}"><title>${DECADES[i]}: ${signed(v)} m/år${n}</title></rect>`;
+            svg+=`<rect x="${xx-width/2}" y="${v>=0?yy:zero}" width="${width}" height="${h}" rx="2" fill="${colorForRate(v)}"><title>${DECADES[i]}: ${signed(v)} m/yr${n}</title></rect>`;
             if(state.decade===DECADES[i]) svg+=`<rect x="${xx-width/2-2}" y="${Math.min(yy,zero)-2}" width="${width+4}" height="${h+4}" rx="3" fill="none" stroke="#344c60" stroke-dasharray="2 2" stroke-width="1.2"/>`;
           } else {
             svg+=`<line x1="${xx-4}" y1="${m.y(0)}" x2="${xx+4}" y2="${m.y(0)}" stroke="#a8b5bd" stroke-width="2"><title>${DECADES[i]}: manglende data</title></line>`;
           }
         });
-        return `<svg class="svg-chart" viewBox="0 0 ${chartW} ${m.height}" role="img" aria-label="Decadale rater vist som positive og negative søjler">${svg}</svg>`;
+        return `<svg class="svg-chart" viewBox="0 0 ${chartW} ${m.height}" role="img" aria-label="Decadal rates displayed as positive and negative bars">${svg}</svg>`;
       }
       function observationChart(items){
         const H=58,axisY=26;
@@ -368,15 +368,15 @@
           s+=`<line x1="${xx}" x2="${xx}" y1="${axisY-2}" y2="${axisY+6}" stroke="#aebac3"/><text x="${xx}" y="${H-10}" text-anchor="middle" class="axis-label">${year}</text>`;
         });
         if(!items.length){
-          s+=`<text x="${marginL+chartInnerW/2}" y="14" text-anchor="middle" class="axis-label">Ingen tilknyttede israndopmålinger</text>`;
+          s+=`<text x="${marginL+chartInnerW/2}" y="14" text-anchor="middle" class="axis-label">No linked ice-margin observations</text>`;
         }
         const sameDays=new Map();
         items.forEach(m=>{
           const n=sameDays.get(m.day)||0;sameDays.set(m.day,n+1);
           const cy=axisY-5-Math.min(n,3)*7,selected=state.selectedMarginIndex===m.index;
-          s+=`<circle cx="${xForObservation(m)}" cy="${cy}" r="${selected?6.5:4.2}" fill="rgb(${marginColor(m.day).join(',')})" stroke="${selected?'#192e3b':'#fff'}" stroke-width="${selected?2:1.1}"><title>${esc(m.date||String(m.year))} · ${esc(m.image||'Billede ikke oplyst')}</title></circle>`;
+          s+=`<circle cx="${xForObservation(m)}" cy="${cy}" r="${selected?6.5:4.2}" fill="rgb(${marginColor(m.day).join(',')})" stroke="${selected?'#192e3b':'#fff'}" stroke-width="${selected?2:1.1}"><title>${esc(m.date||String(m.year))} · ${esc(m.image||'Image not specified')}</title></circle>`;
         });
-        return `<svg class="svg-chart" viewBox="0 0 ${chartW} ${H}" role="img" aria-label="Israndobservationer på samme tidsakse fra 1930 til 2030 som rategrafen">${s}</svg>`;
+        return `<svg class="svg-chart" viewBox="0 0 ${chartW} ${H}" role="img" aria-label="Ice-margin observations aligned with the decadal rate chart from 1930 to 2030">${s}</svg>`;
       }
       function renderIndividual(){
         const f=byId.get(state.selectedId);
@@ -384,25 +384,25 @@
         const grp=f.id.split('-trib')[0],related=featuresByGroup.get(grp)||[],mar=marginsByGroup.get(grp)||[];
         const vals=DECADES.map(d=>f.values[state.layer]?.[d]);
         const valid=vals.filter(Number.isFinite);
-        el.selectedTitle.textContent=f.id;
-        el.selectedMeta.innerHTML=`<span class="tag">${esc(f.terminus)}</span><span class="tag">Region ${esc(f.region)}</span><span class="tag">${esc(layerShort[state.layer])}</span><span class="tag emph">${esc(state.decade)}: ${signed(f.values[state.layer]?.[state.decade])} m/år</span>`;
+        el.selectedTitle.textContent='Selected glacier · '+f.id;
+        el.selectedMeta.innerHTML=`<span class="tag">${esc(f.terminus)}</span><span class="tag">Region ${esc(f.region)}</span><span class="tag">${esc(layerShort[state.layer])}</span><span class="tag emph">${esc(state.decade)}: ${signed(f.values[state.layer]?.[state.decade])} m/yr</span>`;
         if(related.length>1){
-          el.groupChoice.innerHTML=`<div class="group-choice">Flere tributærer hører til israndsgruppe ${esc(grp)}. Vælg punkt: <select id="tributarySelect">${related.map(other=>`<option value="${esc(other.id)}" ${other.id===f.id?'selected':''}>${esc(other.id)}</option>`).join('')}</select></div>`;
+          el.groupChoice.innerHTML=`<div class="group-choice">Multiple tributaries belong to ice-margin group ${esc(grp)}. Select point: <select id="tributarySelect">${related.map(other=>`<option value="${esc(other.id)}" ${other.id===f.id?'selected':''}>${esc(other.id)}</option>`).join('')}</select></div>`;
           el.groupChoice.querySelector('select').addEventListener('change',ev=>{state.selectedId=ev.target.value;state.selectedMarginIndex=null;renderPoints();renderIndividual();});
         } else el.groupChoice.innerHTML='';
         el.individualLineChart.innerHTML=lineChart(vals);
-        const rows=DECADES.map((d,i)=>`<tr><td>${esc(d)}</td><td>${signed(vals[i])} m/år</td></tr>`).join('');
+        const rows=DECADES.map((d,i)=>`<tr><td>${esc(d)}</td><td>${signed(vals[i])} m/yr</td></tr>`).join('');
         let overall='';
         if(state.layer==='decadal_mean_w_OverallRate'){
-          overall=`<div class="overall"><strong>Overall rate:</strong> ${signed(f.overall_rate_m_yr)} m/år<br/><strong>Net change:</strong> ${signed(f.net_change_m)} m</div>`;
+          overall=`<div class="overall"><strong>Overall rate:</strong> ${signed(f.overall_rate_m_yr)} m/yr<br/><strong>Net change:</strong> ${signed(f.net_change_m)} m</div>`;
         }
-        el.valueTable.innerHTML=`<table aria-label="Alle decadale ændringsrater">${rows}</table>${overall}`;
-        el.observationTitle.textContent=`Opmålte israndspositioner · ${mar.length} datoer`;
+        el.valueTable.innerHTML=`<table aria-label="All decadal change rates">${rows}</table>${overall}`;
+        el.observationTitle.textContent=`Observed ice-margin positions · ${mar.length} dates`;
         el.observationChart.innerHTML=observationChart(mar);
         const clicked=state.selectedMarginIndex==null?null:MARGINS[state.selectedMarginIndex];
         if(clicked && clicked.group===grp){
-          const rows=[['Dato',clicked.date],['Billede',clicked.image],['Datakilde',clicked.origin],['Sensor',clicked.sensor],['Metode/forfatter',clicked.author]];
-          el.eventInfo.innerHTML='<strong>Valgt israndslinje</strong>'+rows.filter(([k,v])=>v!==null&&v!==undefined&&v!=='').map(([k,v])=>`<div><b>${esc(k)}:</b> ${esc(v)}</div>`).join('');
+          const rows=[['Date',clicked.date],['Image',clicked.image],['Data source',clicked.origin],['Sensor',clicked.sensor],['Method/author',clicked.author]];
+          el.eventInfo.innerHTML='<strong>Selected ice-margin line</strong>'+rows.filter(([k,v])=>v!==null&&v!==undefined&&v!=='').map(([k,v])=>`<div><b>${esc(k)}:</b> ${esc(v)}</div>`).join('');
         } else el.eventInfo.innerHTML='';
       }
       function renderAggregate(){
@@ -414,10 +414,10 @@
         });
         el.avgPointCount.textContent=fmt(feats.length,0);
         el.avgCurrent.textContent=signed(vals[DECADES.indexOf(state.decade)]);
-        el.aggregateSubtitle.textContent=(state.viewOnly?'Aktuelt kortudsnit':'Alle gletsjerpunkter')+' · '+(state.terminus==='all'?'alle typer':state.terminus)+' · '+layerShort[state.layer]+'.';
+        el.aggregateSubtitle.textContent=(state.viewOnly?'Current map extent':'All glacier points')+' · '+(state.terminus==='all'?'all terminus types':state.terminus)+' · '+layerShort[state.layer]+'.';
         el.averageBarChart.innerHTML=barChart(vals,counts,162);
         const ns=counts.filter(n=>n>0);
-        el.averageNote.textContent='Uvejet gennemsnit pr. årti, med manglende værdier udeladt. Antal punkter med data pr. årti: '+(ns.length?Math.min(...ns)+'–'+Math.max(...ns):'0')+'. Hold musen over søjlerne for eksakt værdi og antal.';
+        el.averageNote.textContent='Unweighted decadal mean, excluding missing values. Number of points with data per decade: '+(ns.length?Math.min(...ns)+'–'+Math.max(...ns):'0')+'. Hover over the bars for exact values and sample counts.';
       }
       function chooseGlacier(id,marginIndex=null){
         if(!byId.has(id))return;
